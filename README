@@ -1,0 +1,34 @@
+# Deriv Even/Odd Digit Bot
+
+## Local setup
+
+Use Python 3.10 or newer, install the runtime dependencies, and copy `.env.example`
+to `.env`:
+
+```powershell
+python -m pip install websockets python-dotenv
+Copy-Item .env.example .env
+python bot.py
+```
+
+Set `APP_ID` in `.env`. With the default `DRY_RUN=true`, the bot subscribes to
+market ticks but does not authorize an account or place orders. Trade outcomes
+and payouts are simulated; this is not a backtest or a forecast of live results.
+Daily trades and PnL are persisted in `trade_history.json`.
+
+The configured market is Deriv's Volatility 100 (1s) symbol, `1HZ100V`.
+`R_100` is a different instrument.
+
+## Live trading
+
+Real order placement is disabled by default. To enable order placement on a
+Deriv demo or live account, set that account's valid token, match `ENVIRONMENT`
+to the token's account mode, and set `DRY_RUN=false` in `.env`. The account must
+be denominated in USD. Review the fixed stake and risk limits in `config.py`
+before running.
+Even/Odd outcomes are not reliably predictable from recent digit frequencies;
+the included mean-reversion signal is experimental and can lose money. The
+hard-coded limits do not prevent losses caused by outages, slippage, or a
+disconnected process. If an order's outcome is ambiguous, the bot records an
+unresolved-order marker and refuses to place more orders on restart until the
+account is reconciled manually.
